@@ -31,7 +31,11 @@
   <depend>ffmpeg_image_transport_msgs</depend>
   <depend>foxglove_msgs</depend>
   <depend>ffmpeg</depend>
-  <depend>libavdevice-dev</depend>
+  <depend>libavformat-dev</depend>
+  <depend>libavcodec-dev</depend>
+  <depend>libavutil-dev</depend>
+  <depend>pkg-config</depend>
+
 
   <test_depend>ament_lint_common</test_depend>
   <test_depend>ament_lint_auto</test_depend>

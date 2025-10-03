@@ -17,7 +17,6 @@
 
 #include <ffmpeg_image_transport/ffmpeg_encoder.hpp>
 #include <foxglove_msgs/msg/compressed_video.hpp>
-
 #include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 

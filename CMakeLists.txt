@@ -52,7 +52,8 @@ pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
     libavcodec
     libswresample
     libswscale
-    libavutil)
+    libavutil
+    libavformat)
 
 set(LIBRARY_NAME ${PROJECT_NAME}_component)
 
@@ -89,6 +90,29 @@ target_link_libraries(test_encoder ${LIBRARY_NAME})
 target_include_directories(test_encoder PRIVATE include)
 ament_target_dependencies(test_encoder cv_bridge rclcpp sensor_msgs ffmpeg_image_transport_msgs foxglove_msgs)
 
+# Add ffmpeg_packets_to_compressed_video_node executable
+add_executable(ffmpeg_packets_to_compressed_video_node
+  src/ffmpeg_packets_to_compressed_video.cpp
+)
+
+target_include_directories(ffmpeg_packets_to_compressed_video_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_compile_features(ffmpeg_packets_to_compressed_video_node PUBLIC c_std_99 cxx_std_17)
+
+ament_target_dependencies(
+  ffmpeg_packets_to_compressed_video_node
+  "rclcpp"
+  "foxglove_msgs"
+  "ffmpeg_image_transport_msgs"
+)
+
+target_link_libraries(ffmpeg_packets_to_compressed_video_node
+  PkgConfig::LIBAV
+)
+
 
 ament_export_dependencies(
   OpenCV
@@ -110,6 +134,9 @@ install(TARGETS ${LIBRARY_NAME} EXPORT export_${LIBRARY_NAME}
 install(TARGETS test_encoder
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
+
+install(TARGETS ffmpeg_packets_to_compressed_video_node
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)
 ament_export_libraries(${LIBRARY_NAME})

@@ -25,7 +25,10 @@ FFMPEGPublisher::FFMPEGPublisher() : logger_(rclcpp::get_logger("FFMPEGPublisher
 
 FFMPEGPublisher::~FFMPEGPublisher() {}
 
-void FFMPEGPublisher::packetReady(const CompressedVideoConstPtr & pkt) { (*publishFunction_)(*pkt); }
+void FFMPEGPublisher::packetReady(const CompressedVideoConstPtr & pkt)
+{
+  (*publishFunction_)(*pkt);
+}
 
 #if defined(IMAGE_TRANSPORT_API_V1) || defined(IMAGE_TRANSPORT_API_V2)
 void FFMPEGPublisher::advertiseImpl(
