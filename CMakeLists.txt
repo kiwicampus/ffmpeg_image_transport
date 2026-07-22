@@ -21,6 +21,18 @@ if(DEFINED ENV{ROS_DISTRO})
     else()
       add_definitions(-DIMAGE_TRANSPORT_API_V3)
     endif()
+
+  # cv_bridge dropped the legacy cv_bridge/cv_bridge.h header in favor of
+  # cv_bridge/cv_bridge.hpp starting with Jazzy; Humble and Iron still ship
+  # only the legacy header.
+  if($ENV{ROS_DISTRO} STREQUAL "foxy" OR
+      $ENV{ROS_DISTRO} STREQUAL "galactic" OR
+      $ENV{ROS_DISTRO} STREQUAL "humble" OR
+      $ENV{ROS_DISTRO} STREQUAL "iron")
+      # use legacy cv_bridge/cv_bridge.h
+    else()
+      add_definitions(-DCV_BRIDGE_HPP)
+    endif()
 else()
   message(ERROR "ROS_DISTRO environment variable is not set!")
 endif()
