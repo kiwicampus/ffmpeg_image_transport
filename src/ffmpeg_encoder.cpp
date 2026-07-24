@@ -100,10 +100,20 @@ void FFMPEGEncoder::setParameters(rclcpp::Node * node)
   bitRate_ = get_safe_param<int64_t>(node, ns + "bit_rate", 8242880);
   GOPSize_ = get_safe_param<int64_t>(node, ns + "gop_size", 15);
   pixFormat_ = pixelFormat(get_safe_param<std::string>(node, ns + "pixel_format", ""));
+  // frameRate_/timeBase_ default to 100 fps (see header) and were never otherwise
+  // overridden in production code (only in test_encoder.cpp) — the encoder's
+  // rate-control math silently assumed 100 fps regardless of the real publish rate,
+  // e.g. under-delivering bit_rate by ~70% at an actual 30 fps stream (100/30).
+  const int frameRate = get_safe_param<int>(node, ns + "framerate", 30);
+  frameRate_.num = frameRate;
+  frameRate_.den = 1;
+  timeBase_.num = 1;
+  timeBase_.den = frameRate;
   RCLCPP_INFO_STREAM(
     logger_, "enc: " << codecName_ << " prof: " << profile_ << " preset: " << preset_);
   RCLCPP_INFO_STREAM(
-    logger_, "qmax: " << qmax_ << " bitrate: " << bitRate_ << " gop: " << GOPSize_);
+    logger_, "qmax: " << qmax_ << " bitrate: " << bitRate_ << " gop: " << GOPSize_
+                       << " framerate: " << frameRate);
 }
 
 bool FFMPEGEncoder::initialize(int width, int height, Callback callback)
