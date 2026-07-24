@@ -384,7 +384,10 @@ int FFMPEGEncoder::drainPacket(const Header & header, int width, int height)
     // packet->height = height;
     // packet->pts = pk.pts;
     // packet->flags = pk.flags;
-    packet->format = "h264";
+    // codecContext_->codec_id is the same AVCodecID regardless of which specific
+    // encoder produced it (libx264/h264_nvenc/h264_nvmpi all report AV_CODEC_ID_H264),
+    // so this reflects the actual configured codec instead of assuming h264.
+    packet->format = avcodec_get_name(codecContext_->codec_id);
     memcpy(&(packet->data[0]), pk.data, pk.size);
     if (measurePerformance_) {
       t2 = rclcpp::Clock().now();
@@ -396,7 +399,6 @@ int FFMPEGEncoder::drainPacket(const Header & header, int width, int height)
     auto it = ptsToStamp_.find(pk.pts);
     if (it != ptsToStamp_.end()) {
       // packet->header.stamp = it->second;
-      // packet->encoding = codecName_;
       packet->timestamp = it->second;
       callback_(pptr);  // deliver packet callback
       if (measurePerformance_) {
